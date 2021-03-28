@@ -33,9 +33,9 @@ class AuthController extends Controller
             $phone = '00966' . $result;
             $code = mt_rand(1000, 9999);
             $jsonObj = array(
-                'mobile' => 'tqnee.com.sa',
-                'password' => '589935sa',
-                'sender' => 'TQNEE',
+                'mobile' => '',
+                'password' => '',
+                'sender' => '',
                 'numbers' => $phone,
                 'msg' => 'كود التأكيد الخاص بك في نطاقات الصيانة هو :' . $code,
 
@@ -140,9 +140,9 @@ class AuthController extends Controller
 
 
             $jsonObj = array(
-                'mobile' => 'tqnee.com.sa',
-                'password' => '589935sa',
-                'sender' => 'TQNEE',
+                'mobile' => '',
+                'password' => '',
+                'sender' => '',
                 'numbers' => $phone,
                 'msg' => 'كود التأكيد الخاص بك في نظاقات الصيانة هو :' . $code,
 
@@ -347,9 +347,9 @@ class AuthController extends Controller
 
 
         $jsonObj = array(
-            'mobile' => 'tqnee.com.sa',
-            'password' => '589935sa',
-            'sender' => 'TQNEE',
+            'mobile' => '',
+            'password' => '',
+            'sender' => '',
             'numbers' => $request->phone,
             'msg' => 'كود التأكيد الخاص بك في نطاقات الصيانة هو :' . $code,
 
