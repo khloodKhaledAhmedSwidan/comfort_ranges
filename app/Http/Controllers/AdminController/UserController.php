@@ -147,8 +147,12 @@ if($check ==  null )
         if($phoneCheck)
         {
             flash(app()->getLocale() == 'en'?'this phone number is used before':'هذا الرقم مستخدم من قبل')->error();
+            
             return redirect('admin/users');
         }
+
+
+    
         $user->update([
             'phone' => $request->phone == null ? $user->phone : $request->phone,
             'name' => $request->name == null ? $user->name : $request->name,
@@ -160,6 +164,11 @@ if($check ==  null )
         ]);
 
 if($request->category_id){
+    $orders = $user->employeeOrders()->whereIn('category_id',[$request->category_id])->get();
+if($orders->count() == 0){
+    flash(app()->getLocale() == 'en'?'The service that contains a order cannot be deleted by this employee':'لا يمكن حذف الخدمه التي تحتوي علي طلب لدي هذا الموظف')->error();
+    return redirect('admin/users');
+}
 CategoryUser::where('user_id',$user->id)->delete();
 
     foreach($request->category_id as $cat){
@@ -216,6 +225,11 @@ CategoryUser::where('user_id',$user->id)->delete();
     public function destroy($id)
     {
         $users = User::find($id);
+        if($users->employeeOrders()->get()){
+            flash(app()->getLocale() == 'en'?'you cannot delete this employee':'لا يمكن حذف هذا الموظف')->error();
+
+            return back();
+        }
         $users->delete();
         flash(app()->getLocale() == 'en'?'deleted successfully':'تم حذف  بيانات  المستخدم  بنجاح')->success();
 

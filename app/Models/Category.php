@@ -17,7 +17,10 @@ class Category extends Model
 //        return $this->hasMany('App\User');
 //    }
 
-
+public function CategoryOrderShifts()
+{
+    return $this->hasMany('App\Models\CategoryOrderShift','category_id');
+}
     public function sliders()
     {
         return $this->hasMany('App\Models\Slider','category_id');

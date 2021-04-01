@@ -502,4 +502,11 @@ return [
    
         'simple_system' =>'statistical',
      'canceledOrdersBeforeStated' =>'canceled Orders Before Started',
+
+
+     
+     'shift_orders_avaliable' =>'available periods ',
+     'rejected_users' =>'rejected users',
+     'add_rejected_users' =>'add rejected users',
+     'edit_rejected_users' =>'edit rejected users',
  ];

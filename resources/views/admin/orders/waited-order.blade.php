@@ -112,7 +112,7 @@
                                     </label>
                                 </td>
                                 <td style="display: none;"><?php echo ++$i ?></td>
-                                <td> {{$order->id}} </td>
+                                <td> {{$order->real_num}} </td>
                                 <td> {{\App\User::find($order->user_id)->name}} </td>
                                 <td> {{\App\User::find($order->user_id)->phone}} </td>
                                 <td>{{\App\User::find($order->employee_id)->name}}</td>
@@ -174,23 +174,34 @@
                                 </td> --}}
                                 <td>
                                     <div class="btn-group">
-{{--                                        <button class="btn btn-xs green dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"> @lang('messages.Processes')--}}
-{{--                                            <i class="fa fa-angle-down"></i>--}}
-{{--                                        </button>--}}
-{{--                                        <ul class="dropdown-menu pull-left" role="menu">--}}
-                                            {{--<li>--}}
-                                            {{--<a href="">--}}
-                                            {{--<i class="icon-eye"></i> عرض--}}
-                                            {{--</a>--}}
-                                            {{--</li>--}}
-{{--                                            <li>--}}
-                                                <a class="btn btn-info btn-sm" href="{{route('show_orderPage',$order->id)}}">
-                                                    <i class="icon-docs"></i>  @lang('messages.show')   </a>
-                                        {{-- <a class="btn btn-info btn-sm" href="{{route('showBillCompletedOrder',$order->id)}}">
-                                            <i class="icon-docs"></i>  @lang('messages.showBill') </a> --}}
-{{--                                            </li>--}}
 
-{{--                                        </ul>--}}
+    
+
+
+
+
+                                                    <div class="btn-group">
+                                                        <button class="btn btn-xs green dropdown-toggle" type="button"
+                                                                data-toggle="dropdown"
+                                                                aria-expanded="false"> @lang('messages.Processes')
+                                                            <i class="fa fa-angle-down"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu pull-left" role="menu">
+                                               
+                                                            <li>
+                                                            <a href="{{route('edit_waitedOrderPage',$order->id)}}">
+                                                                    <i class="icon-docs"></i> @lang('messages.update') </a> 
+                                                                <a href="{{route('redirect_order_to_another_employeePage',$order->id)}}">
+                                                                    <i class="icon-docs"></i>@lang('messages.redirect_order_to_another_employee')
+                                                                </a> 
+                
+  
+                                                                <a  href="{{route('show_orderPage',$order->id)}}">
+                                                                    <i class="icon-docs"></i>  @lang('messages.show')   </a>
+                                                            </li>
+                
+                                                        </ul>
+                                                    </div>
                                     </div>
                                 </td>
                             </tr>

@@ -87,7 +87,7 @@
 
                                 <td>
                   @php
-             $orderCount    =  $user->employeeOrders->whereIn('status',[1,2])->count();
+             $orderCount    =  $user->employeeOrders->whereIn('status',[1,2,5])->count();
                   @endphp
                                     {{$orderCount}}
                                 </td>

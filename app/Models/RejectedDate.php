@@ -11,4 +11,9 @@ class RejectedDate extends Model
     public $timestamps = true;
     protected $fillable = array('reject_date', 'reason','reason_en');
 
+    public function rejectedUsers()
+	{
+		return $this->hasMany('App\Models\RejectedUser', 'rejected_date_id');
+	}
+
 }

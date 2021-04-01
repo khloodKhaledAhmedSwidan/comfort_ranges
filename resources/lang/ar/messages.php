@@ -493,4 +493,10 @@ return [
     
         'simple_system' =>'احصائيات',
         'canceledOrdersBeforeStated'=>'الغاء الطلب قبل البدء ',
+
+        'shift_orders_avaliable' =>'الفترات المتاحه ',
+        'rejected_users' =>'حجب الموظفيين',
+        'add_rejected_users' =>'اضافه حجب موظفيين',
+        'edit_rejected_users' =>'تعديل حجب الموظفيين',
+  
  ];

@@ -94,6 +94,11 @@ Route::prefix('admin')->group(function () {
         Route::resource('rejected_dates', 'AdminController\RejectedDateController');
         Route::get('rejected_dates/delete/{id}', 'AdminController\RejectedDateController@destroy')->name('deleteCategory');
 
+
+        //========================== rejected users ==========================================================
+        Route::resource('rejected_users', 'AdminController\RejectedUserController');
+        Route::get('rejected_users/delete/{id}', 'AdminController\RejectedUserController@destroy')->name('deleteRejectUsers');
+
         // order shifts
         Route::resource('orderShifts', 'AdminController\OrderShiftController');
         Route::get('orderShifts/delete/{id}', 'AdminController\OrderShiftController@destroy')->name('deleteOrderShift');
@@ -117,6 +122,11 @@ Route::prefix('admin')->group(function () {
         Route::post('update-bill/{id}', 'AdminController\OrderController@editBill')->name('editBill');
         route::get('orders/remove/image/{order_id}', 'AdminController\OrderController@imageRemove')->name('remove_image');
         Route::post('change-order-status/{id}', 'AdminController\OrderController@changeOrderStatus')->name('changeOrderStatus');
+
+
+        Route::get('edit-waited-order-page/{id}', 'AdminController\OrderController@editWaitedOrderPage')->name('edit_waitedOrderPage');
+        Route::post('update-waitedOrder/{id}', 'AdminController\OrderController@updateWaitedOrderPage')->name('update_waitedOrderPage');
+
 //    Route::get('get_employee/{id}','AdminController\OrderController@get_employee');
 //========================== redirect order to another employee
         Route::get('redirect-order-to-another-employee/{id}', 'AdminController\OrderController@redirectOrderToEmployeePage')->name('redirect_order_to_another_employeePage');

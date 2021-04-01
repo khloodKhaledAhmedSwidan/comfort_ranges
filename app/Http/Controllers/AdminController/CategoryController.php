@@ -5,6 +5,9 @@ namespace App\Http\Controllers\AdminController;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\CategoryOrderShift;
+use App\Models\Order;
+use App\Models\TimeOrder;
 
 class CategoryController extends Controller
 {
@@ -67,6 +70,8 @@ class CategoryController extends Controller
             'arranging' => 'required|unique:categories|numeric',
             'image' => 'required|mimes:jpeg,jpg,png|max:3000|image',
             'branch_id' => 'required|exists:branches,id',
+            'order_shifts' => 'required|array',
+            'order_shifts.*' =>'exists:order_shifts,id',
         ]);
 
         $category = Category::create([
@@ -77,6 +82,17 @@ class CategoryController extends Controller
             'branch_id'    =>$request->branch_id,
 
         ]);
+        foreach($request->order_shifts as $orderShift){
+
+            // CategoryOrderShift::create([
+            //     'category_id' =>$category->id,
+            //     'order_shift_id' =>$orderShift,
+            // ]);
+            $category->CategoryOrderShifts()->create([
+                'order_shift_id' =>$orderShift,
+            ]);
+        }
+     
         flash(app()->getLocale() == 'en'?'created successfully':'تم إنشاء الخدمة بنجاح')->success();
         return redirect('admin/categories');
     }
@@ -115,10 +131,11 @@ class CategoryController extends Controller
     public function update(Request $request, $id)
     {
         //
+
         $category =Category::find($id);
+
         $this->validate($request, [
             'arranging' => 'unique:categories,arranging,'.$id,
-
         ]);
 
         $category->update($request->except('image'));
@@ -126,9 +143,29 @@ class CategoryController extends Controller
             $category->arranging = $request->arranging;
             $category->save();
         }
+
         $oldImage = $category->image;
     $category->image =    $request->image != null ?UploadImageEdit($request->image,'category','uploads/categories',$oldImage):$category->image;
         $category->save();
+
+        if($request->order_shifts){
+            $orderInThisPeriods=  $category->orders()->whereNotIn('order_shift_id',$request->order_shifts)->get();
+            $remainOrderInThisPeriods = $category->orders()->where('complete_in_another_day',1)->pluck('id')->toArray();
+            $remainOrderInThisPeriods1 = TimeOrder::whereIn('order_id',$remainOrderInThisPeriods)->whereNotIn('order_shift_id',$request->order_shifts)->get();
+            //->timeOrders()->whereNotIn('order_shift_id',$request->order_shifts)->get();
+            if($orderInThisPeriods->count() > 0 || $remainOrderInThisPeriods1->count() > 0 ){
+                flash(app()->getLocale() == 'en'?'Periods cannot be deleted, the user has pre-orders':'لا يمكن حذف الفترات،المستخدم بها طلبات مسبقا')->error();
+                return redirect('admin/categories');
+            }
+
+            $category->CategoryOrderShifts()->delete();
+            foreach($request->order_shifts as $orderShift){
+                $category->CategoryOrderShifts()->create([
+                    'order_shift_id' =>$orderShift,
+                ]);
+
+            }
+        }
         flash(app()->getLocale() == 'en'?'updated successfully':'تم التعديل بنجاح')->success();
         return redirect('admin/categories');
     }

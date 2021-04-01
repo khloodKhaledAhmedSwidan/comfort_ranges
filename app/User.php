@@ -65,6 +65,7 @@ class User extends Authenticatable
 //        return $this->belongsTo('App\Models\Category', 'category_id');
 //    }
 
+
     public function shifts()
     {
         return $this->hasMany('App\Models\Shift');

@@ -16,7 +16,6 @@
 @endsection
 
 @section('page_header')
-
     <div class="page-bar">
         <ul class="page-breadcrumb">
             <li>
@@ -62,7 +61,7 @@
                                 </div>
 
                             </div>
-                            <form role="form" action="{{route('create_order')}}" method="post" enctype="multipart/form-data" >
+                            <form role="form" action="{{route('create_order')}}" method="post" enctype="multipart/form-data">
                                 <input type = 'hidden' name = '_token' value = '{{Session::token()}}'>
 
                                 <div class="portlet-body">
@@ -72,7 +71,7 @@
                                         <div class="form-group">
                                             <label>@lang('messages.choose_branch')</label>
 
-                                            <select  class="form-control" name="branch_id" required="required">
+                                            <select  class="form-control" name="branch_id" required>
                                                 <option value="" disabled
                                                         selected>@lang('messages.choose_branch')</option>
                                                 @foreach(\App\Models\Branch::all() as $branch)
@@ -98,7 +97,7 @@
 
                                                 {{-- <span> @lang('messages.choose-branch') : </span> --}}
 
-                                                <select class="form-control select2" name="category_id" required="required" >
+                                                <select class="form-control select2" name="category_id" required >
 
                                                     <option selected
                                                             disabled>@lang('messages.choose_service') </option>
@@ -126,7 +125,7 @@
                                         <div class="form-group">
                                             <label> @lang('messages.clients')</label>
 
-                                            <select class="form-control" name="user_id" required="required" >
+                                            <select class="form-control" name="user_id" required>
                                                 <option value="" disabled
                                                         selected>@lang('messages.choose_client')
                                                 </option>
@@ -150,7 +149,7 @@
                                         <div class="form-group">
                                             <label> @lang('messages.employees')</label>
 
-                                            <select class="form-control" name="employee_id" required="required">
+                                            <select class="form-control" name="employee_id" required>
                                                 <option value="" disabled
                                                         selected>@lang('messages.choose_employee')
                                                 </option>
@@ -173,7 +172,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label">@lang('messages.date') </label>
-                                            <input   type="date" name="date" placeholder="@lang('messages.date') " class="form-control" value="{{old('date')}}"  required="required"/>
+                                            <input type="date" name="date" placeholder="@lang('messages.date') " class="form-control" value="{{old('date')}}" required />
                                             @if ($errors->has('date'))
                                                 <span class="help-block">
                                                        <strong style="color: red;">{{ $errors->first('date') }}</strong>
@@ -183,7 +182,7 @@
                                         <div class="form-group">
                                             <label> @lang('messages.Periods')</label>
 
-                                            <select class="form-control" name="order_shift_id" required="required">
+                                            <select class="form-control" name="order_shift_id" required>
                                                 <option value="" disabled
                                                         selected>@lang('messages.choose_period')
                                                 </option>
@@ -206,7 +205,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label"> @lang('messages.Note_on_order')</label>
-                                            <textarea  type="text" name="note" placeholder="@lang('messages.Note_on_order')  " class="form-control" value="{{old('note')}}" required="required"></textarea>
+                                            <textarea type="text" name="note" placeholder="@lang('messages.Note_on_order')  " class="form-control" value="{{old('note')}}"></textarea>
                                             @if ($errors->has('note'))
                                                 <span class="help-block">
                                                        <strong style="color: red;">{{ $errors->first('note') }}</strong>
@@ -237,7 +236,7 @@
             </div>
 
 
-            <input  type="hidden" id="lat" name="latitude" class="form-control mb-2"
+            <input type="text" id="lat" name="latitude" class="form-control mb-2"
                    readonly="yes" required/>
 
             @if ($errors->has('latitude'))
@@ -250,7 +249,7 @@
 
             @endif
 
-            <input type="hidden" id="lng" name="longitude" class="form-control mb-2"
+            <input type="text" id="lng" name="longitude" class="form-control mb-2"
                    readonly="yes" required/>
 
             @if ($errors->has('longitude'))
@@ -285,7 +284,7 @@
                                                             <span class="btn red btn-outline btn-file">
                                                                 <span class="fileinput-new">@lang('messages.choose_images') </span>
                                                                 <span class="fileinput-exists"> @lang('messages.change') </span>
-                                                                <input  type="file" name="image[]" multiple required="required"/> </span>
+                                                                <input type="file" name="image[]" multiple> </span>
                                                         <a href="javascript:;" class="btn red fileinput-exists"
                                                            data-dismiss="fileinput"> @lang('messages.delete') </a>
                                                     </div>
@@ -306,7 +305,7 @@
                             <input type="hidden" id="currentLang" name="currentLang" class="form-control mb-2" value="{{app()->getLocale()}}"/>
                                 <div class="margiv-top-10">
                                     <div class="form-actions">
-                                        <button type="submit" class="btn green" value="حفظ" onclick="this.disabled=true;this.value='تم الارسال, انتظر...';this.form.submit();">@lang('messages.save')</button>
+                                        <button type="submit" class="btn green" value="حفظ"  >@lang('messages.save')</button>
 
                                     </div>
                                 </div>
@@ -335,7 +334,6 @@
 
 
 var lang = $('#currentLang').val();
-
 console.log('lang' + lang);
         $('select[name="branch_id"]').on('change', function () {
 

@@ -1,7 +1,7 @@
 @extends('admin.layouts.master')
 
 @section('title')
-@lang('messages.Services')
+@lang('messages.rejected_users')
 @endsection
 
 @section('styles')
@@ -21,18 +21,16 @@
                 <i class="fa fa-circle"></i>
             </li>
             <li>
-                <a href="/admin/categories">@lang('messages.Services')</a>
+                <a href="/admin/rejected_users">@lang('messages.rejected_users')</a>
                 <i class="fa fa-circle"></i>
             </li>
-            <li>
-                <span>@lang('messages.show_services')</span>
-            </li>
+           
         </ul>
     </div>
 
-    <h1 class="page-title">@lang('messages.show_services')
+    {{-- <h1 class="page-title">@lang('messages.show_services')
         <small>@lang('messages.show_all_services')</small>
-    </h1>
+    </h1> --}}
 @endsection
 
 @section('content')
@@ -46,7 +44,7 @@
                     <div class="caption font-dark">
                         <i class="icon-settings font-dark"></i>
 
-                        <a href="{{route('categories.create')}}" class="btn btn-sm btn-info">   <span class="caption-subject bold uppercase">@lang('messages.new_addition')</span></a>
+                        <a href="{{route('rejected_users.create')}}" class="btn btn-sm btn-info">   <span class="caption-subject bold uppercase">@lang('messages.new_addition')</span></a>
                     </div>
 
                 </div>
@@ -62,19 +60,17 @@
                                 </label>
                             </th>
                             <th></th>
-                            <th> @lang('messages.name') </th>
-                            <th>@lang('messages.name_en') </th>
-                                    <th>@lang('messages.active_customer') </th>
-                            <th>@lang('messages.branch') </th>
-                            <th>@lang('messages.arranging') </th>
-                            <th>@lang('messages.shift_orders_avaliable')</th>
+                
+                            <th> @lang('messages.date') </th>
+                            <th>@lang('messages.period') </th>
+                            <th>@lang('messages.employees')</th>
                             <th> @lang('messages.Processes') </th>
-
+         
                         </tr>
                         </thead>
                         <tbody>
                         <?php $i=0 ?>
-                        @foreach($categories as $category)
+                        @foreach($rejectesUsers as $rejectesUser)
                             <tr class="odd gradeX">
                                 <td>
                                     <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
@@ -83,53 +79,49 @@
                                     </label>
                                 </td>
                                 <td><?php echo ++$i ?></td>
-                                <td> {{$category->name_ar}} </td>
-                                <td> {{$category->name}} </td>
-                                        <td>
-                                    <input type="checkbox" id="activation-{{$category->id}}"
-                                    onchange="testActive({{$category->active}},{{$category->id}})"
-                                    {{$category->active == 1 ? 'checked' : ''}} data-toggle="toggle">
-
-                                </td>
-                                <td>{{app()->getLocale() == 'en' ?\App\Models\Branch::find($category->branch_id)->name:\App\Models\Branch::find($category->branch_id)->name_ar}}</td>
-                                <td> {{$category->arranging}} </td>
+                                <td> {{App\Models\RejectedDate::where('id',$rejectesUser->rejected_date_id)->first()->reject_date}} </td>
+                                @php 
+                                $time = App\Models\OrderShift::where('id',$rejectesUser->order_shift_id)->first();
+                                @endphp
+                                <td>  {{app()->getLocale() == 'en'?'from'. ' '. \Carbon\Carbon::createFromFormat('H:i:s',$time->from )->format('h:i') .' '.'to'.' '.\Carbon\Carbon::createFromFormat('H:i:s',$time->to )->format('h:i'):'من ' .' ' .\Carbon\Carbon::createFromFormat('H:i:s',$time->from )->format('h:i').' '.'الي'.' '.\Carbon\Carbon::createFromFormat('H:i:s',$time->to )->format('h:i')}} </td>
+                     
+                        
 
 <td>
-    <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal{{$category->id}}">
-@lang('messages.show')
-  </button>
-  
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal{{$category->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">@lang('messages.shift_orders_avaliable')</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-            <ul>
-        @foreach ($category->CategoryOrderShifts()->get() as $orderShift)
-
-      @php
-    $time =      App\Models\OrderShift::where('id',$orderShift->order_shift_id)->first();
-      @endphp
-            <li> {{app()->getLocale() == 'en'?'from'. ' '. \Carbon\Carbon::createFromFormat('H:i:s',$time->from )->format('h:i') .' '.'to'.' '.\Carbon\Carbon::createFromFormat('H:i:s',$time->to )->format('h:i'):'من ' .' ' .\Carbon\Carbon::createFromFormat('H:i:s',$time->from )->format('h:i').' '.'الي'.' '.\Carbon\Carbon::createFromFormat('H:i:s',$time->to )->format('h:i')}} </li>
-         
-        
-        @endforeach
-    </ul>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('messages.close')</button>
- 
-        </div>
-      </div>
-    </div>
-  </div>
+    
+           <!-- Button trigger modal -->
+           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal{{$rejectesUser->id}}">
+            @lang('messages.show')
+              </button>
+              
+              <!-- Modal -->
+              <div class="modal fade" id="exampleModal{{$rejectesUser->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">@lang('messages.employees')</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                        <ul>
+                    @foreach ($rejectesUser->rejecteds()->get() as $user)
+            
+               
+                        <li> {{App\User::where('id',$user->user_id)->first()->name}} </li>
+                     
+                    
+                    @endforeach
+                </ul>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('messages.close')</button>
+             
+                    </div>
+                  </div>
+                </div>
+              </div>
 </td>
 
 
@@ -137,9 +129,9 @@
 
 
 
-                                    <a class="btn btn-info btn-sm" style="margin-left: 2rem;" href="{{route('categories.edit',$category->id)}}">
+                                    <a class="btn btn-info btn-sm" style="margin-left: 2rem;" href="{{route('rejected_users.edit',$rejectesUser->id)}}">
                                         <i class="icon-docs"></i> @lang('messages.update') </a>
-                                    <a class="delete_attribute btn btn-danger btn-sm" data="{{$category->id}}" data_name="{{app()->getLocale() =='en'?$category->name:$category->name_ar}}" >
+                                    <a class="delete_attribute btn btn-danger btn-sm" data="{{$rejectesUser->id}}" data_name="{{App\Models\RejectedDate::where('id',$rejectesUser->rejected_date_id)->first()->reject_date}}" >
                                         <i class="fa fa-key"></i> @lang('messages.delete')
                                     </a>
 
@@ -202,7 +194,7 @@
                     closeOnConfirm: false
                 }, function() {
 
-                    window.location.href = "{{ url('/') }}" + "/admin/categories/delete/"+id;
+                    window.location.href = "{{ url('/') }}" + "/admin/rejected_users/delete/"+id;
 
                 });
 

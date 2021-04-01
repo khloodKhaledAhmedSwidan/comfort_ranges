@@ -33,6 +33,7 @@ class CreateOrdersTable extends Migration {
             $table->foreign('order_shift_id')->references('id')->on('order_shifts')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('completed_order_accepte_tax')->nullable();
             $table->integer('location_id')->nullable();
+			$table->integer('real_num')->nullable();
             $table->foreign('location_id')->references('id')->on('locations')->onUpdate('cascade')->onDelete('cascade');
             $table->string('vedio', 255)->nullable();
 

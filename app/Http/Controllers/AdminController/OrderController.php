@@ -8,6 +8,7 @@ use App\Models\Image;
 use App\Models\Order;
 use App\Models\RejectedDate;
 use App\Models\Setting;
+use App\Models\RejectedUser;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -163,6 +164,7 @@ saveNotification($order->user_id,' your order is reject','تم الغاء  طل�
 
     public function createOrder(Request $request)
     {
+      
         $this->validate($request, [
             'branch_id' => 'required|exists:branches,id',
             'category_id' => 'required|exists:categories,id',
@@ -170,21 +172,23 @@ saveNotification($order->user_id,' your order is reject','تم الغاء  طل�
             'order_shift_id' => 'required|exists:order_shifts,id',
             'employee_id' => 'required|exists:users,id',
             'date' => 'required|date_format:Y-m-d',
-            'note' => 'required|string',
+            'note' => 'nullable|string',
             'latitude' => 'required',
             'longitude' => 'required',
-            "image" => 'required',
-            "image*" => 'required|mimes:jpeg,bmp,png,jpg,gif,ico,psd,webp,tif,tiff|max:5000',
+            "image" => 'nullable',
+            "image*" => 'nullable|mimes:jpeg,bmp,png,jpg,gif,ico,psd,webp,tif,tiff|max:5000',
         ]);
         $allImage = $request->image;
-
-        foreach ($allImage as $image) {
-            if ($image->getClientOriginalExtension() == "jfif") {
-                flash(app()->getLocale() == 'en' ? 'This image format is not supported' : 'صيغه هذه الصوره غير  مدعومه')->error();
-                return back();
-            }
-
+if($allImage){
+    foreach ($allImage as $image) {
+        if ($image->getClientOriginalExtension() == "jfif") {
+            flash(app()->getLocale() == 'en' ? 'This image format is not supported' : 'صيغه هذه الصوره غير  مدعومه')->error();
+            return back();
         }
+
+    }
+}
+    
 
 
         $today = Carbon::today();
@@ -194,16 +198,38 @@ saveNotification($order->user_id,' your order is reject','تم الغاء  طل�
             return redirect()->route('new_orders');
         }
 
-        $rejectedDate = RejectedDate::where('reject_date', $request->date)->first();
-        if ($rejectedDate) {
+        // $rejectedDate = RejectedDate::where('reject_date', $request->date)->first();
+        // if ($rejectedDate) {
 
-            flash(app()->getLocale() == 'en' ? 'This date is blocked by the administration' : 'هذا التاريخ محجوب من قبل الادارة')->error();
-            return redirect()->route('new_orders');
-        }
+        //     flash(app()->getLocale() == 'en' ? 'This date is blocked by the administration' : 'هذا التاريخ محجوب من قبل الادارة')->error();
+        //     return redirect()->route('new_orders');
+        // }
 
         $categories = User::find($request->employee_id)->categories()->get();
         foreach ($categories as $category) {
             if ($category->id == $request->category_id) {
+
+
+                $lastNumInOrders = Order::orderBy('id','desc')->first();
+
+
+        $reject = RejectedDate::where('reject_date', $request->date)->first();
+        $rejectDateTime =  $reject != null ?RejectedUser::where('order_shift_id', $request->order_shift_id)->where('rejected_date_id',$reject->id)->first() : null;
+    
+    if($rejectDateTime != null){
+     $rejectUser =  $rejectDateTime->rejecteds()->where('user_id',$request->employee_id)->first();
+    }
+    
+    
+    
+    
+        // check send order in rejected date or note
+    
+        if ($rejectUser != null) { 
+      
+            flash(app()->getLocale() == 'en' ? 'This date is blocked by the administration' : 'هذا التاريخ محجوب من قبل الادارة')->error();
+            return redirect()->route('new_orders');
+        }
 
 
                 $order = Order::create([
@@ -212,18 +238,23 @@ saveNotification($order->user_id,' your order is reject','تم الغاء  طل�
                     'order_shift_id' => $request->order_shift_id,
                     'employee_id' => $request->employee_id,
                     'date' => $request->date,
-                    'note' => $request->note,
+                    'note' => $request->note!= null ? $request->note : null,
                     'status' => 1,
+                    'tax' => 1,
                     'latitude' => $request->latitude,
                     'longitude' => $request->longitude,
+                    'real_num' =>$lastNumInOrders != null ?($lastNumInOrders->real_num != null ?($lastNumInOrders->real_num +1):1):1
                 ]);
-                foreach ($allImage as $image) {
+                if($allImage){
+                    foreach ($allImage as $image) {
 
-                    $order->images()->create([
-                        'image' => UploadImage($image, 'order', 'uploads/orders'),
-                    ]);
-
+                        $order->images()->create([
+                            'image' => UploadImage($image, 'order', 'uploads/orders'),
+                        ]);
+    
+                    }
                 }
+          
                 //   send notification to drivers
                 $devicesTokens = Device::where('user_id', $order->employee_id)
                     ->get()
@@ -281,6 +312,137 @@ saveNotification($order->user_id,'your order send successfully',   'تم ارس�
             return back();
         }
     }
+
+
+    public function editWaitedOrderPage(Request $request, $id)
+    {
+        $order = Order::find($id);
+        if ($order->status == 5) {
+            return view('admin.orders.edit_waited_order', compact('order'));
+
+        } else {
+            flash(app()->getLocale() == 'en' ? 'You cannot enter this page' : 'لا يمكن دخول هذه الصفحه')->error();
+            return back();
+        }
+    }
+
+
+    public function updateWaitedOrderPage(Request $request, $id)
+    {
+        $this->validate($request, [
+//            'branch_id' => 'exists:branches,id',
+//            'category_id' => 'exists:categories,id',
+            // 'user_id' => 'exists:users,id',
+            'order_shift_id' => 'exists:order_shifts,id',
+            // 'employee_id' => 'exists:users,id',
+            // 'date' => 'date_format:Y-m-d',
+//            'note' => 'string',
+
+            "image" => 'nullable',
+            "image*" => 'required|mimes:jpeg,bmp,png,jpg,gif,ico,psd,webp,tif,tiff|max:5000',
+        ]);
+        $allImage = $request->image;
+        if ($allImage) {
+            foreach ($allImage as $image) {
+                if ($image->getClientOriginalExtension() == "jfif") {
+                    flash(app()->getLocale() == 'en' ? 'This image format is not supported' : 'صيغه هذه الصوره غير  مدعومه')->error();
+                    return back();
+                }
+
+            }
+        }
+
+
+        $order = Order::find($id);
+$employee = $order->employee_id;
+        $categories = User::find($employee)->categories()->get();
+        foreach ($categories as $category) {
+            $cat = $request->category_id != null ?$request->category_id:$order->category_id;
+            if ($category->id == $cat) {
+// $order->update($request->all());
+
+               $order->update([
+                   'category_id' => $cat,
+                //    'user_id' => $request->user_id,
+                //    'order_shift_id' => $request->order_shift_id,
+                //    'employee_id' => $request->employee_id,
+                //    'date' => $request->date,
+                   'note' => $request->note,
+                   'status' => $order->status,
+                   'latitude' => $request->latitude,
+                   'longitude' => $request->longitude,
+               ]);
+
+               $lastRreschedule = $order->timeOrders()->orderBy('id','desc')->first();
+               if($request->date){
+              
+                   $lastRreschedule->date =  $request->date;
+                   $lastRreschedule->save();
+               }
+               if( $request->order_shift_id){
+              
+                $lastRreschedule->order_shift_id =  $request->order_shift_id;
+                $lastRreschedule->save();
+            }
+
+                if ($allImage) {
+                    foreach ($allImage as $image) {
+
+                        $order->images()->create([
+                            'image' => UploadImage($image, 'order', 'uploads/orders'),
+                        ]);
+
+                    }
+                }
+
+if($request->date || $request->order_shift_id){
+//                         send notification to drivers employee
+$devicesTokens = Device::where('user_id', $order->employee_id)
+->get()
+->pluck('device_token')
+->toArray();
+
+if ($devicesTokens) {
+//                         $order->employee_id
+if(User::find($order->employee_id)->language == 'en'){
+    sendMultiNotification( 'The order has been modified','The order has been modified', $devicesTokens);
+}else{
+    sendMultiNotification( 'تم التعديل علي الطلب','تم التعديل علي الطلب', $devicesTokens);
+}
+
+}
+saveNotification($order->employee_id, 'check order','تفحص الطلب ',  ' check order ','تفحص الطلب ',  $order->id);
+
+// send notification to user
+$devicesTokens = Device::where('user_id', $order->user_id)
+->get()
+->pluck('device_token')
+->toArray();
+
+if ($devicesTokens) {
+//                         $order->employee_id
+if(User::find($order->user_id)->language == 'en'){
+    sendMultiNotification( 'The order has been modified','The order has been modified', $devicesTokens);
+}else{
+    sendMultiNotification( 'تم التعديل علي الطلب','تم التعديل علي الطلب', $devicesTokens);
+}
+
+
+}
+saveNotification($order->user_id, 'check order','تفحص الطلب ',  ' check order ','تفحص الطلب ',  $order->id);
+
+}
+                flash(app()->getLocale() == 'en' ? 'updated successfully' : 'تم تعديل الطلب بنجاح')->success();
+                return back();
+
+
+            }
+        }
+        flash(app()->getLocale() == 'en' ? 'You cannot register an order, this employee does not provide this service' : 'لا يمكنك تسجيل الطلب ,هذا الموظف لا يقدم هذه الخدمة')->error();
+        return back();
+
+    }
+
 
     public function updateOrderPage(Request $request, $id)
     {

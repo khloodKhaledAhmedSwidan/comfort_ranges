@@ -40,7 +40,8 @@ class Order extends Model
     *is_paid = 0 لم يتم الدفع  
     */
     protected $fillable = array('category_id', 'category_name', 'category_name_ar', 'user_id', 'price', 'from', 'to', 'employee_id', 'note', 'status', 'date', 'order_shift_id', 'number_order_in_time', 'employee_note', 'tax', 'work_duration', 'latitude', 'longitude',
-     'location_id','material_cost','is_paid','total','vedio','completed_order_accepte_tax','notes_on_what_was_done','complete_in_another_day');
+     'location_id','material_cost','is_paid','total','vedio','completed_order_accepte_tax','notes_on_what_was_done','complete_in_another_day'
+    ,'real_num');
 
     public function images()
     {

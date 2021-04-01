@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\OrderShift;
 use App\Models\Rate;
 use App\Models\RejectedDate;
+use App\Models\RejectedUser;
 use App\Models\Sentence;
 use App\Models\Setting;
 use App\Models\WithOrder;
@@ -86,6 +87,7 @@ public function showOrder(Request $request){
         
             array_push($data, [
                 'id' => intval($order->id),
+                'real_num'=>intval($order->real_num),
                 'category_id' => intval($order->category_id),
                 'category' => $request->header('X-localization') == 'en' ? Category::find($order->category_id)->name : Category::find($order->category_id)->name_ar,
                 'categoryImage' => Category::find($order->category_id)->image != null ? asset('/uploads/categories/' . Category::find($order->category_id)->image) : null,
@@ -299,14 +301,15 @@ return ApiController::respondWithErrorArray(array($errors));
             ];
             return ApiController::respondWithErrorArray(array($errors));
         }
-        // check send order in rejected date or note
-        $rejectedDate = RejectedDate::where('reject_date', $request->date)->first();
-        if ($rejectedDate) {
-            $errors = ['key' => 'message',
-                'value' => $request->header('X-localization') == 'en' ?'This date cannot be booked because:'. $rejectedDate->reason_en :'لا يمكن حجز هذا التاريخ بسبب : ' . $rejectedDate->reason
-            ];
-            return ApiController::respondWithErrorArray(array($errors));
-        }
+
+        // // check send order in rejected date or note
+        // $rejectedDate = RejectedDate::where('reject_date', $request->date)->first();
+        // if ($rejectedDate) {
+        //     $errors = ['key' => 'message',
+        //         'value' => $request->header('X-localization') == 'en' ?'This date cannot be booked because:'. $rejectedDate->reason_en :'لا يمكن حجز هذا التاريخ بسبب : ' . $rejectedDate->reason
+        //     ];
+        //     return ApiController::respondWithErrorArray(array($errors));
+        // }
 
 
         $validator = Validator::make($request->all(), $rules);
@@ -322,6 +325,14 @@ return ApiController::respondWithErrorArray(array($errors));
 
         $order = null;
         foreach ($users as $user) {
+            $reject = RejectedDate::where('reject_date', $request->date)->first();
+     $rejectDateTime =  $reject != null ?RejectedUser::where('order_shift_id', $request->time)->where('rejected_date_id',$reject->id)->first() : null;
+
+if($rejectDateTime != null){
+  $rejectUser =  $rejectDateTime->rejecteds()->where('user_id',$user->id)->first();
+}
+
+
 //            $categories = $user->categories()->get();
 //            foreach ($categories as $category) {
 //                if ($category->id == $request->category_id) {
@@ -350,7 +361,7 @@ return ApiController::respondWithErrorArray(array($errors));
 //                    dd($orderCountwherestatus1 + $orderCountwherestatus2);
             $count_of_order_in_period = $user->available_orders != 0 ? $user->available_orders: Setting::find(1)->count_of_order_in_period;
 
-            if (($orderCountwherestatus1 + $orderCountwherestatus2 +  $orderCountwherestatus5) < $count_of_order_in_period) {
+            if ((($orderCountwherestatus1 + $orderCountwherestatus2 +  $orderCountwherestatus5) < $count_of_order_in_period) && $rejectUser == null  ) {
 //                        $markAnotherOrderCount = Order::where([
 //                            ['status', 1],
 //                            ['user_id', $request->user()->id],
@@ -365,6 +376,9 @@ return ApiController::respondWithErrorArray(array($errors));
 //                        ])->get();
 //                        $anotherOrderArray = [];
 
+
+$lastNumInOrders = Order::orderBy('id','desc')->first();
+
                 $order = Order::create([
                     'date' => $request->date,
                     'order_shift_id' => $request->time,
@@ -377,6 +391,8 @@ return ApiController::respondWithErrorArray(array($errors));
 //                            'longitude' => $request->longitude != null ? $request->longitude : null,
 //                            'latitude' => $request->latitude != null ? $request->latitude : null,
                     'location_id' => $request->location_id != null ? $request->location_id : null,
+                    'real_num' =>$lastNumInOrders != null ?($lastNumInOrders->real_num != null ?($lastNumInOrders->real_num +1):1):1,
+
                 ]);
 
 //                        if ($markAnotherOrderCount > 0) {
@@ -502,6 +518,7 @@ saveNotification($order->user_id,'your order send successfully',   'تم ارس�
                 $data = [];
                 array_push($data, [
                     'id' => intval($order->id),
+                    'real_num' => intval($order->real_num),
                     'category_id' => intval($order->category_id),
                     'category' => $request->header('X-localization') == 'en' ? Category::find($order->category_id)->name : Category::find($order->category_id)->name_ar,
                     'user_id' => intval($order->user_id),
@@ -647,6 +664,7 @@ saveNotification($order->user_id,'your order send successfully',   'تم ارس�
                 }
                 array_push($data, [
                     'id' => intval($order->id),
+                    'real_num'=>intval($order->real_num),
                     'category_id' => intval($order->category_id),
                     'category' => $request->header('X-localization') == 'en' ? Category::find($order->category_id)->name : Category::find($order->category_id)->name_ar,
                     'categoryImage' => Category::find($order->category_id)->image != null ? asset('/uploads/categories/' . Category::find($order->category_id)->image) : null,
@@ -749,6 +767,7 @@ saveNotification($order->user_id,'your order send successfully',   'تم ارس�
         $data = [];
         array_push($data, [
             'id' => intval($order->id),
+            'real_num'=>intval($order->real_num),
             'category_id' => intval($order->category_id),
             'category' => $request->header('X-localization') == 'en' ? Category::find($order->category_id)->name : Category::find($order->category_id)->name_ar,
             'user_id' => intval($order->user_id),
@@ -861,6 +880,7 @@ saveNotification($order->user_id,'your order send successfully',   'تم ارس�
 
             array_push($data, [
                 'id' => intval($order->id),
+                'real_num'=>intval($order->real_num),
                 'category_id' => intval($order->category_id),
                 'category' => $request->header('X-localization') == 'en' ? Category::find($order->category_id)->name : Category::find($order->category_id)->name_ar,
                 'user_id' => intval($order->user_id),
@@ -939,6 +959,7 @@ saveNotification($order->user_id,'your order send successfully',   'تم ارس�
                 'user_id' => intval($complaint->user_id),
                 'user' => User::find($complaint->user_id)->name,
                 'order_id' => intval($complaint->order_id),
+                'real_num'=>intval($order->real_num),
                 'title' => $complaint->title,
                 'description' => $complaint->description,
             ]);

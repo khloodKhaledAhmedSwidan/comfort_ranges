@@ -13,7 +13,7 @@
         <input type = 'hidden' name = '_token' value = '{{Session::token()}}'>
 
         <div class="banner" style="background-image: url(http://bwpheritagehotel.com/wp-content/uploads/2018/12/keyboard-typing-banner.jpg);">
-            <h1 style="color:#fff;">{{app()->getLocale() =='en' ?'Job Order'. $order->id: 'رقم الطلب' . $order->id}}</h1>
+            <h1 style="color:#fff;">{{app()->getLocale() =='en' ?'Job Order'. $order->real_num: 'رقم الطلب' . $order->real_num}}</h1>
         </div>
 
         <div style="text-align:center;padding-top:15px"><img src="{{ asset('img/'.App\Models\Setting::find(1)->image) }}" style="width: 180px;" /> </div>

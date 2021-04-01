@@ -185,7 +185,10 @@
                      
 
                                 <td>
-                    
+                                    @if(($order->status == 3 && $order->is_paid == 1) || ($order->status == 3 && $order->is_paid == 2))
+                                    <a   href="{{route('showBillCompletedOrder',$order->id)}}">
+                                        @lang('messages.showBill') </a>
+@endif
                                     <div class="text-center"> 
                                         <!-- Button trigger modal -->
                                         <a type="button"  data-toggle="modal" data-target="#exampleModalLong{{$order->id}}">

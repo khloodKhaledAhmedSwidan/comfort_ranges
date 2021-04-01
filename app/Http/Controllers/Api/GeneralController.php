@@ -25,8 +25,8 @@ class GeneralController extends Controller
 
         array_push($arr, [
       
-            'qrcodeEmployee' => 'https://api.qrserver.com/v1/create-qr-code/?data=https://play.google.com/store/apps/details?id=com.tqnee.easymenu.easy_menu',
-            'qrcodeClient' => 'https://api.qrserver.com/v1/create-qr-code/?data=https://play.google.com/store/apps/details?id=com.tqnee.easymenu.easy_menu' ,
+            'qrcodeEmployee' => 'https://play.google.com/store/apps/details?id=com.tqnee.ntaqat_edara',
+            'qrcodeClient' => 'https://play.google.com/store/apps/details?id=com.tqnee.ntaqat' ,
 
         ]);
 

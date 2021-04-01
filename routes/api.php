@@ -143,7 +143,7 @@ Route::prefix('v1')->group(function () {
             Route::post('another-services-choose-list-of-them', 'Client\GeneralController@anotherServicesChooseListOfThem');
 
             // all available periods
-            Route::get('available-periods', 'Client\GeneralController@availablePeriods');
+            Route::post('available-periods', 'Client\GeneralController@availablePeriods');
 
 
             //orders for client

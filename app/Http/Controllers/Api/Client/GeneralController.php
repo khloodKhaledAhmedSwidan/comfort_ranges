@@ -9,6 +9,7 @@ use App\Models\OrderShift;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use Illuminate\Support\Carbon;
 use phpDocumentor\Reflection\Location;
 use Validator;
@@ -253,7 +254,22 @@ $user->save();
 
     public function availablePeriods(Request $request)
     {
-        $availablePeriods = OrderShift::get();
+        // $availablePeriods = OrderShift::get();
+
+        $rules = [
+            'category_id' => 'required|exists:categories,id',
+
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails())
+            return ApiController::respondWithErrorArray(validateRules($validator->errors(), $rules));
+
+            $category = Category::where('id',$request->category_id)->first();
+            $avaliablePeriodss = $category->CategoryOrderShifts()->pluck('order_shift_id')->toArray();
+            $availablePeriods = OrderShift::whereIn('id',$avaliablePeriodss)->get();
+
         if ($availablePeriods) {
             $data = [];
             foreach ($availablePeriods as $availablePeriod) {

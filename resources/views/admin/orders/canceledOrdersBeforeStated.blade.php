@@ -108,7 +108,7 @@
                                     </label>
                                 </td>
                                 <td style="display: none;"><?php echo ++$i ?></td>
-                                <td> {{$order->id}} </td>
+                                <td> {{$order->real_num}} </td>
 
                                 <td> {{\App\User::find($order->user_id)->name}} </td>
                                 <td> {{\App\User::find($order->user_id)->phone}} </td>

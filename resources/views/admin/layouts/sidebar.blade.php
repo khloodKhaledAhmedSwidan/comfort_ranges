@@ -138,6 +138,15 @@
                     </span>
                 </a>
             </li>
+
+            <li class="nav-item {{ strpos(URL::current(), 'admin/rejected_users') !== false ? 'active' : '' }}">
+                <a href="{{route('rejected_users.index') }}" class="nav-link ">
+                    <i class="icon-layers"></i>
+                    <span class="title">@lang('messages.rejected_users')  </span>
+                    <span class="pull-right-container">
+                    </span>
+                </a>
+            </li>
             <li class="nav-item {{ strpos(URL::current(), 'admin/general-notifications') !== false ? 'active' : '' }}">
                 <a href="{{ route('notifications.generalPage') }}" class="nav-link ">
                     <i class="icon-layers"></i>

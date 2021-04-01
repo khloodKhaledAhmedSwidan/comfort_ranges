@@ -118,6 +118,25 @@
 
                                         </div>
 
+
+
+                                        <div class="form-group">
+                                            <label class="control-label">{{app()->getLocale() == 'en' ?'choose periods':'اختر الفترات'}}</label>
+                                     
+                                               <select name="order_shifts[]" class="form-control select2" required multiple>
+                                               <option selected disabled > {{app()->getLocale() == 'en' ?'choose periods':'اختر الفترات'}}  </option>
+                                               @foreach(App\Models\OrderShift::get() as $orderShift)
+                                                  <option value="{{$orderShift->id}}"> {{app()->getLocale() == 'en'?'from'. ' '. \Carbon\Carbon::createFromFormat('H:i:s',$orderShift->from )->format('h:i') .' '.'to'.' '.\Carbon\Carbon::createFromFormat('H:i:s',$orderShift->to )->format('h:i'):'من ' .' ' .\Carbon\Carbon::createFromFormat('H:i:s',$orderShift->from )->format('h:i').' '.'الي'.' '.\Carbon\Carbon::createFromFormat('H:i:s',$orderShift->to )->format('h:i')}} </option>
+                                               @endforeach
+                                               </select>
+                                                @if ($errors->has('order_shifts'))
+                                                    <span class="help-block">
+                                                       <strong style="color: red;">{{ $errors->first('order_shifts') }}</strong>
+                                                    </span>
+                                                @endif
+                                           
+                                        </div>
+
                                         <div class="form-body">
                                             <div class="form-group ">
                                                 <label class="control-label col-md-3">@lang('messages.image') </label>

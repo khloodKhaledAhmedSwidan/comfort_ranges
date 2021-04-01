@@ -43,9 +43,9 @@ class OrderShiftController extends Controller
     {
         //
 
-        $orderShifts =OrderShift::count();
-        //add 2 order shifts
-        if($orderShifts > 3) {
+        // $orderShifts =OrderShift::count();
+        // //add 2 order shifts
+        // if($orderShifts > 3) {
             $this->validate($request, [
                 'from'                 => 'required|date_format:H:i',
                 'to'                  => 'required|date_format:H:i',
@@ -60,10 +60,10 @@ class OrderShiftController extends Controller
             ]);
             flash(app()->getLocale()=='en'?'The period has been created successfully':'تم أنشاء  الفترة  بنجاح')->success();
             return redirect('admin/orderShifts');
-        }else{
-            flash(app()->getLocale() == 'en'?'It is not possible to add more than two periods':'لا يمكن اضافه اكتر من فترتين')->error();
-            return redirect('admin/orderShifts');
-        }
+        // }else{
+        //     flash(app()->getLocale() == 'en'?'It is not possible to add more than two periods':'لا يمكن اضافه اكتر من فترتين')->error();
+        //     return redirect('admin/orderShifts');
+        // }
 
     }
 
@@ -129,7 +129,7 @@ class OrderShiftController extends Controller
     {
         //
         $orderShift = OrderShift::find($id);
-        if($orderShift->orders()->count() >0){
+        if($orderShift->orders()->count() >0 || $orderShift->CategoryOrderShifts()->count() > 0){
             flash( app()->getLocale() == 'en'?'This period cannot be cleared, it contains requests':'لا يمكن مسح هذا الفترة,تحتوي علي طلبات')->error();
             return redirect('admin/orderShifts');
         }else{
